@@ -5,6 +5,7 @@ use warnings;
 use v5.20;
 
 use Moose;
+use namespace::autoclean;
 
 has 'node' => ( is => 'rw', isa => 'Any' );
 
