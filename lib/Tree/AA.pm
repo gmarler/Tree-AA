@@ -167,7 +167,11 @@ sub _mk_iter {
 *rev_iter = _mk_iter(qw/max predecessor/);
 
 
-
+# Create magical 'NIL' node
+my $nil = Tree::AA::Node->new();
+$nil->level(0);
+$nil->left($nil);
+$nil->right($nil);
 
 sub new {
   my ($class, $cmp) = @_;
@@ -182,7 +186,19 @@ sub new {
   return bless $obj => $class;
 }
 
+sub make_node {
+  my $self  = shift;
+  my $key   = shift;
+  my $value = shift;
+  my $level = shift;
 
+  my $rn = Tree::AA::Node->new($key, $value);
+  $rn->level($level);
+  $rn->left($nil);
+  $rn->right($nil);
+
+  return $rn;
+}
 
 sub skew {
   my $self = shift;
