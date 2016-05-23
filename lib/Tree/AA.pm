@@ -249,18 +249,18 @@ sub put {
       $up[$top++] = $it;
       if ($cmp) {
         if ($cmp->($it->[_KEY], $key) < 0) {
-          $dir = "_LEFT";
+          $dir = _LEFT;
         } elsif ($cmp->($it->[_KEY], $key) > 0) {
-          $dir = "_RIGHT";
+          $dir = _RIGHT;
         } else {
           say "Inserting over existing key $key";
           return $root;
         }
       } else {
         if ($it->[_KEY] lt $key) {
-          $dir = "_LEFT";
+          $dir = _LEFT;
         } elsif ($it->[_KEY] gt $key) {
-          $dir = "_RIGHT";
+          $dir = _RIGHT;
         } else {
           say "Inserting over existing key $key";
           return $root;
@@ -280,8 +280,8 @@ sub put {
       if ($top != 0) {
         $dir =
           ($up[$top - 1]->[_RIGHT] == $up[$top])
-          ? "_RIGHT"
-          : "_LEFT";
+          ? _RIGHT
+          : _LEFT;
       }
 
       $up[$top] = aa_skew($up[$top]);
