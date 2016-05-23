@@ -184,6 +184,38 @@ sub new {
 
 
 
+sub skew {
+  my $self = shift;
+  my $root = shift;
 
+  if ( ($root->[_LEFT]->[_LEVEL] == $root->[_LEVEL]) &&
+       $root->[_LEVEL] != 0 )
+  {
+    my $save = $root->[_RIGHT];
+
+    $root->[_RIGHT] = $save->[_LEFT];
+    $save->[_LEFT]  = $root;
+    $root = $save;
+    $root->[_LEVEL]++;
+  }
+  return $root;
+}
+
+sub split {
+  my $self = shift;
+  my $root = shift;
+
+  if (($root->[_RIGHT]->[_RIGHT]->[_LEVEL] == $root $root->[_LEVEL]) &&
+      $root->[_LEVEL] != 0 )
+  {
+    my $save = $root->[_RIGHT];
+
+    $root->[_RIGHT] = $save->[_LEFT];
+    $save->[_LEFT]  = $root;
+    $root = $save;
+    $root->[_LEVEL]++;
+  }
+  return $root;
+}
 
 1;
