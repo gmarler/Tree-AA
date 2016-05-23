@@ -177,7 +177,9 @@ sub new {
   my ($class, $cmp) = @_;
 
   my $obj = [];
-  $obj->size = 0;
+  # We haven't 'blessed' the object into Tree::AA yet, so we have to set size
+  # the hard way
+  $obj->[SIZE] = 0;
   if ($cmp) {
     ref $cmp eq 'CODE'
       or croak('Invalid arg: coderef expected');
@@ -199,6 +201,25 @@ sub make_node {
 
   return $rn;
 }
+
+
+sub root { $_[0]->[ROOT] }
+sub size { $_[0]->[SIZE] }
+ 
+*SCALAR = \&size;
+ 
+sub min {
+    my $self = shift;
+    return undef unless $self->[ROOT];
+    return $self->[ROOT]->min;
+}
+ 
+sub max {
+    my $self = shift;
+    return undef unless $self->[ROOT];
+    return $self->[ROOT]->max;
+}
+
 
 sub skew {
   my $self = shift;
