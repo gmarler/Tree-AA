@@ -7,8 +7,8 @@ use Data::Dumper;
 use_ok( 'Tree::AA' );
 
 diag( "Testing Tree::AA" );
- 
-#   put 
+
+#   put
 #
 foreach my $m (qw[
     new
@@ -19,7 +19,7 @@ foreach my $m (qw[
 {
     can_ok('Tree::AA', $m);
 }
- 
+
 my $tree = Tree::AA->new;
 isa_ok($tree, 'Tree::AA');
 ok($tree->size == 0, 'New tree has size zero');
