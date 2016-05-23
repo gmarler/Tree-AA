@@ -47,7 +47,7 @@ sub new {
 
 sub min {
   my $self = shift;
-  while ($self->[_LEFT]) {
+  while ($self->[_LEFT] != $nil) {
     $self = $self->[_LEFT];
   }
   return $self;
@@ -55,7 +55,7 @@ sub min {
 
 sub max {
   my $self = shift;
-  while ($self->[_RIGHT]) {
+  while ($self->[_RIGHT] != $nil) {
     $self = $self->[_RIGHT];
   }
   return $self;

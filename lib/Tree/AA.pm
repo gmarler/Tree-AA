@@ -274,7 +274,7 @@ sub put {
       $it = $it->[$dir];
     }
 
-    $it->[$dir] = make_node($key, $value, 1);
+    $it->[$dir] = $self->make_node($key, $value, 1);
 
     while (--$top >= 0) {
       if ($top != 0) {
@@ -284,8 +284,8 @@ sub put {
           : _LEFT;
       }
 
-      $up[$top] = aa_skew($up[$top]);
-      $up[$top] = aa_split($up[$top]);
+      $up[$top] = $self->aa_skew($up[$top]);
+      $up[$top] = $self->aa_split($up[$top]);
 
       if ($top != 0) {
         $up[$top - 1]->[$dir] = $up[$top];
