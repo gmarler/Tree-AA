@@ -45,4 +45,38 @@ sub new {
   return bless $obj, $class;
 }
 
+sub min {
+  my $self = shift;
+  while ($self->[_LEFT]) {
+    $self = $self->[_LEFT];
+  }
+  return $self;
+}
+
+sub max {
+  my $self = shift;
+  while ($self->[_RIGHT]) {
+    $self = $self->[_RIGHT];
+  }
+  return $self;
+}
+
+sub leaf {
+  my $self = shift;
+
+  while (my $any_child = $self->[_LEFT] || $self->[_RIGHT]) {
+    $self = $any_child;
+  }
+  return $self;
+}
+
+sub successor {
+  my $self = shift;
+
+  if ($self->[_RIGHT]) {
+    return $self->[_RIGHT]->min;
+  }
+
+}
+
 1;
