@@ -20,7 +20,7 @@ BEGIN {
 
 use enum @Node_slots;
 
-# enum does'nt allow symbols to start with "_", but we want them
+# enum doesn't allow symbols to start with "_", but we want them
 foreach my $s (@Node_slots) {
   no strict 'refs';
   *{"_$s"} = \&$s;
