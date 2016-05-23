@@ -221,7 +221,7 @@ sub split {
   my $self = shift;
   my $root = shift;
 
-  if (($root->[_RIGHT]->[_RIGHT]->[_LEVEL] == $root $root->[_LEVEL]) &&
+  if (($root->[_RIGHT]->[_RIGHT]->[_LEVEL] == $root->[_LEVEL]) &&
       $root->[_LEVEL] != 0 )
   {
     my $save = $root->[_RIGHT];
