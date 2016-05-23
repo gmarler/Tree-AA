@@ -24,5 +24,6 @@ my $tree = Tree::AA->new;
 isa_ok($tree, 'Tree::AA');
 ok($tree->size == 0, 'New tree has size zero');
 
+$tree->put('France'  => 'Paris');
 
 done_testing();

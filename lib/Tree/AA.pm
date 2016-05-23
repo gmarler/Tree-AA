@@ -220,6 +220,20 @@ sub max {
     return $self->[ROOT]->max;
 }
 
+sub put {
+  my $self = shift;
+  my $key_or_node = shift;
+  defined $key_or_node
+    or croak("Can't use undefined value as key or node");
+  my $val = shift;
+
+  my $cmp = $self->[CMP];
+  my $z = (ref $key_or_node eq 'Tree::AA::Node')
+            ? $key_or_node
+            : Tree::AA::Node->new($key_or_node => $val);
+    
+
+}
 
 sub skew {
   my $self = shift;
