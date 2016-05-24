@@ -287,6 +287,45 @@ sub lookup {
   return;
 }
 
+*FETCH = \&lookup;
+*get   = \&lookup;
+
+sub nth {
+  my ($self, $i) = @_;
+
+  $i =~ /^-?\d+$/
+    or croak('Integer index expected');
+  if ($i < 0) {
+    $i += $self->[SIZE];
+  }
+  if ($i < 0 | $i >= $self->[SIZE]) {
+    return;
+  }
+
+  my ($node, $next, $moves);
+
+  if ($i > $self->[SIZE] / 2) {
+    $node = $self->max;
+    $next = 'predecessor';
+    $moves = $self->[SIZE] - $i - 1;
+  } else {
+    $node = $self->min;
+    $next = 'successor';
+    $moves = $i;
+  }
+
+  my $count = 0;
+  while ($count != $moves) {
+    $node = $node->$next;
+    ++$count;
+  }
+  return $node;
+}
+
+sub EXISTS {
+
+}
+
 sub put {
   my $self = shift;
   my $key_or_node = shift;
