@@ -331,7 +331,7 @@ sub lookup {
     if ($next_child == _RIGHT) {
       return wantarray ? ($y->[_VAL], $y) : $y->[_VAL];
     } else {
-      my $next = $->predecessor
+      my $next = $y->predecessor
         or return;
       return wantarray ? ($next->[_VAL], $next): $next->[_VAL];
     }
@@ -350,7 +350,7 @@ sub nth {
   if ($i < 0) {
     $i += $self->[SIZE];
   }
-  if ($i < 0 | $i >= $self->[SIZE]) {
+  if ($i < 0 || $i >= $self->[SIZE]) {
     # TODO: Do we get an undef or the sentinel node here if nothing is found?
     return;
   }
