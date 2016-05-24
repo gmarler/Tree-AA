@@ -168,14 +168,14 @@ sub _mk_iter {
 
 
 # Extract sentinel 'NIL' node from Tree::AA::Node
-my $nil = Tree::AA::Node->nil();
+our $nil = Tree::AA::Node->nil();
 
 sub new {
   my ($class, $cmp) = @_;
 
   my $obj = [];
   # We haven't 'blessed' the object into Tree::AA yet, so we have to set size
-  # the hard way
+  # without the accessor method
   $obj->[SIZE] = 0;
   $obj->[ROOT] = $nil;
   if ($cmp) {
@@ -207,15 +207,25 @@ sub size { $_[0]->[SIZE] }
 *SCALAR = \&size;
 
 sub min {
-    my $self = shift;
-    return undef unless $self->[ROOT];
-    return $self->[ROOT]->min;
+  my $self = shift;
+  return undef unless $self->[ROOT] != $nil;
+
+  my $ptr = $self->[ROOT];
+  while ($ptr->[_LEFT] != $nil) {
+    $ptr = $ptr->[_LEFT];
+  }
+  return $ptr;
 }
 
 sub max {
-    my $self = shift;
-    return undef unless $self->[ROOT];
-    return $self->[ROOT]->max;
+  my $self = shift;
+  return undef unless $self->[ROOT] != $nil;
+
+  my $ptr = $self->[ROOT];
+  while ($ptr->[_RIGHT] != $nil) {
+    $ptr = $ptr->[_RIGHT];
+  }
+  return $ptr;
 }
 
 sub put {
