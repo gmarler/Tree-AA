@@ -88,10 +88,17 @@ sub leaf {
 sub successor {
   my $self = shift;
 
-  if ($self->[_RIGHT]) {
+  if ($self->[_RIGHT] != nil()) {
     return $self->[_RIGHT]->min;
   }
+}
 
+sub predecessor {
+  my $self = shift;
+
+  if ($self->[_LEFT]) {
+    return $self->[_LEFT]->max;
+  }
 }
 
 1;

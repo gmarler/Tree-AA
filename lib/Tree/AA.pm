@@ -152,7 +152,7 @@ sub _mk_iter {
             $next_fn eq 'successor' ? LUGTEQ : LULTEQ
           );
         } else {
-          $node = $self->start_fn;
+          $node = $self->$start_fn;
         }
       }
       return $node;
@@ -226,6 +226,65 @@ sub max {
     $ptr = $ptr->[_RIGHT];
   }
   return $ptr;
+}
+
+sub lookup {
+  my $self = shift;
+  my $key  = shift;
+
+  defined $key
+    or croak("Can't use undefined value as lookup key");
+
+  my $mode = shift || LUEQUAL;
+  my $cmp  = $self->[CMP];
+
+  my $y;
+  my $x = $self->[ROOT]
+    or return;
+
+  my $next_child;
+
+  while ($x) {
+    $y = $x;
+    if ($cmp ? $cmp->($key, $x->[_KEY]) == 0
+             : $key eq $x->[_KEY]) {
+      # Exact match!
+      if ($mode == LUGREAT || $mode == LUNEXT) {
+        $x = $x->successor;
+      } elsif ($mode == LULESS || $mode == LUPREV) {
+        $x = $x->predecessor;
+      }
+      return
+        wantarray ? ($x->[_VAL], $x)
+                  : $x->[_VAL];
+    }
+    if ($cmp ? $cmp->($key, $x->[_KEY]) < 0
+             : $key lt $x->[_KEY]) {
+      $next_child = _LEFT;
+    } else {
+      $next_child = _RIGHT;
+    }
+    $x = $x->[$next_child];
+  }
+  # Didn't find an exact match
+  if ($mode == LUGTEQ || $mode == LUGREAT) {
+    if ($next_child == _LEFT) {
+      return wantarray ? ($y->[_VAL], $y) : $y->[_VAL];
+    } else {
+      my $next = $y->successor
+        or return;
+      return wantarray ? ($next->[_VAL], $next) : $next->[_VAL];
+    }
+  } elsif ($mode == LULTEQ || $mode == LULESS) {
+    if ($next_child == _RIGHT) {
+      return wantarray ? ($y->[_VAL], $y) : $y->[_VAL];
+    } else {
+      my $next = $->predecessor
+        or return;
+      return wantarray ? ($next->[_VAL], $next): $next->[_VAL];
+    }
+  }
+  return;
 }
 
 sub put {
