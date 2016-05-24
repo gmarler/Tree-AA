@@ -7,6 +7,7 @@ diag ("Testing Tree::AA::Node");
 foreach my $m (
   qw[
       new
+      nil
       key
       val
       level

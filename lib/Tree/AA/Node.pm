@@ -45,9 +45,24 @@ sub new {
   return bless $obj, $class;
 }
 
+# Create sentinel nil node with accessor
+{
+  my $obj = [];
+  $obj->[_RIGHT] = $obj;
+  $obj->[_LEFT]  = $obj;
+  $obj->[_LEVEL] = 0;
+  bless $obj, __PACKAGE__;
+
+  # Our accessor
+  sub nil {
+    shift;   # Intentionally ignore invocant
+    return $obj;
+  }
+}
+
 sub min {
   my $self = shift;
-  while ($self->[_LEFT] != $nil) {
+  while ($self->[_LEFT] != nil()) {
     $self = $self->[_LEFT];
   }
   return $self;
@@ -55,7 +70,7 @@ sub min {
 
 sub max {
   my $self = shift;
-  while ($self->[_RIGHT] != $nil) {
+  while ($self->[_RIGHT] != nil()) {
     $self = $self->[_RIGHT];
   }
   return $self;

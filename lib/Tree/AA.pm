@@ -167,11 +167,8 @@ sub _mk_iter {
 *rev_iter = _mk_iter(qw/max predecessor/);
 
 
-# Create magical 'NIL' node
-my $nil = Tree::AA::Node->new();
-$nil->level(0);
-$nil->left($nil);
-$nil->right($nil);
+# Extract sentinel 'NIL' node from Tree::AA::Node
+my $nil = Tree::AA::Node->nil();
 
 sub new {
   my ($class, $cmp) = @_;
