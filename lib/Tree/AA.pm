@@ -299,6 +299,7 @@ sub nth {
     $i += $self->[SIZE];
   }
   if ($i < 0 | $i >= $self->[SIZE]) {
+    # TODO: Do we get an undef or the sentinel node here if nothing is found?
     return;
   }
 
@@ -319,11 +320,16 @@ sub nth {
     $node = $node->$next;
     ++$count;
   }
+  # TODO: Do we get an undef or the sentinel node here if nothing is found?
   return $node;
 }
 
 sub EXISTS {
+  my $self = shift;
+  my $key  = shift;
 
+  # Semantics say we get undef rather than the nil sentinel node here
+  return defined $self->lookup($key);
 }
 
 sub put {
@@ -404,6 +410,8 @@ sub put {
   $self->[SIZE]++;
   return $root;
 }
+
+*STORE = \&put;
 
 sub aa_skew {
   my $self = shift;
