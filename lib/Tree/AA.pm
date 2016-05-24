@@ -413,6 +413,17 @@ sub put {
 
 *STORE = \&put;
 
+sub delete {
+  my ($self, $key_or_node) = @_;
+
+  defined $key_or_node
+    or croak("Can't delete without a key or node to do it with");
+
+
+}
+
+*DELETE = \&delete;
+
 sub aa_skew {
   my $self = shift;
   my $root = shift;
