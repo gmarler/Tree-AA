@@ -208,9 +208,9 @@ sub size { $_[0]->[SIZE] }
 
 sub min {
   my $self = shift;
-  return undef unless $self->[ROOT] != $nil;
+  return undef unless $self->root != $nil;
 
-  my $ptr = $self->[ROOT];
+  my $ptr = $self->root;
   while ($ptr->[_LEFT] != $nil) {
     $ptr = $ptr->[_LEFT];
   }
@@ -219,9 +219,9 @@ sub min {
 
 sub max {
   my $self = shift;
-  return undef unless $self->[ROOT] != $nil;
+  return undef unless $self->root != $nil;
 
-  my $ptr = $self->[ROOT];
+  my $ptr = $self->root;
   while ($ptr->[_RIGHT] != $nil) {
     $ptr = $ptr->[_RIGHT];
   }
@@ -256,18 +256,18 @@ sub put {
       $up[$top++] = $it;
       if ($cmp) {
         if ($cmp->($it->[_KEY], $key) < 0) {
-          $dir = _LEFT;
-        } elsif ($cmp->($it->[_KEY], $key) > 0) {
           $dir = _RIGHT;
+        } elsif ($cmp->($it->[_KEY], $key) > 0) {
+          $dir = _LEFT;
         } else {
           say "Inserting over existing key $key";
           return $root;
         }
       } else {
         if ($it->[_KEY] lt $key) {
-          $dir = _LEFT;
-        } elsif ($it->[_KEY] gt $key) {
           $dir = _RIGHT;
+        } elsif ($it->[_KEY] gt $key) {
+          $dir = _LEFT;
         } else {
           say "Inserting over existing key $key";
           return $root;
@@ -314,12 +314,12 @@ sub aa_skew {
   if ( ($root->[_LEFT]->[_LEVEL] == $root->[_LEVEL]) &&
        $root->[_LEVEL] != 0 )
   {
-    my $save = $root->[_RIGHT];
+    my $save = $root->[_LEFT];
 
-    $root->[_RIGHT] = $save->[_LEFT];
-    $save->[_LEFT]  = $root;
+    $root->[_LEFT]   = $save->[_RIGHT];
+    $save->[_RIGHT]  = $root;
     $root = $save;
-    $root->[_LEVEL]++;
+    $self->[ROOT] = $root;
   }
   return $root;
 }
@@ -337,7 +337,8 @@ sub aa_split {
     $root->[_RIGHT] = $save->[_LEFT];
     $save->[_LEFT]  = $root;
     $root = $save;
-    $root->[_LEVEL]++;
+    ++$root->[_LEVEL];
+    $self->[ROOT] = $root;
   }
   return $root;
 }
