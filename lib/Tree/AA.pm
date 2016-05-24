@@ -170,6 +170,37 @@ sub _mk_iter {
 # Extract sentinel 'NIL' node from Tree::AA::Node
 our $nil = Tree::AA::Node->nil();
 
+sub _reset_hash_iter {
+  my $self = shift;
+
+  if ($self->[HASH_SEEK_ARG]) {
+    my $iter = ($self->[HASH_SEEK_ARG]{'-reverse'} ? 'rev_iter' : 'iter');
+    $self->[HASH_ITER] = $self->$iter($self->[HASH_SEEK_ARG]{'-key'});
+  } else {
+    $self->[HASH_ITER] = $self->iter;
+  }
+}
+
+sub FIRSTKEY {
+  my $self = shift;
+  $self->_reset_hash_iter;
+
+  # TODO: Return undef or sentinel node?
+  my $node = $self->[HASH_ITER]->next
+    or return;
+  return $node->[_KEY];
+}
+
+sub NEXTKEY {
+  my $self = shift;
+
+  # TODO: Return undef or sentinel node?
+  my $node = $self->[HASH_ITER]->next
+    or return;
+  return $node->[_KEY];
+}
+
+
 sub new {
   my ($class, $cmp) = @_;
 
@@ -184,6 +215,27 @@ sub new {
     $obj->[CMP] = $cmp;
   }
   return bless $obj => $class;
+}
+
+*TIEHASH = \&new;
+
+sub DESTROY { $_[0]->[ROOT]->DESTROY if $_[0]->[ROOT] }
+
+sub CLEAR {
+  my $self = shift;
+
+  if ($self->[ROOT]) {
+    $self->[ROOT]->DESTROY;
+    undef $self->[ROOT];
+    undef $self->[HASH_ITER];
+    $self->[SIZE] = 0;
+  }
+}
+
+sub UNTIE {
+  my $self = shift;
+  $self->DESTROY;
+  undef @$self;
 }
 
 sub make_node {
