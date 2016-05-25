@@ -621,6 +621,105 @@ This is a Perl implementation of the Arne Andersson, or AA tree, a type of auto-
 
 See the Wikipedia article at L<https://en.wikipedia.org/wiki/AA_tree> for detailed information on AA Trees.
 
+=head1 INTERFACE
+
+=head2 new([CODEREF])
+
+Creates and returns a new tree. If a reference to a subroutine is passed to
+new(), the subroutine will be used to override the tree's default lexical
+ordering and provide a user defined ordering.
+
+This subroutine should be just like a comparator subroutine used with L<sort>,
+except that it doesn't do the $a, $b trick.
+
+For example, to get a case insensitive ordering
+
+    my $tree = Tree::AA->new(sub { lc $_[0] cmp lc $_[1]});
+    $tree->put('Wall'  => 'Larry');
+    $tree->put('Smith' => 'Agent');
+    $tree->put('mouse' => 'micky');
+    $tree->put('duck'  => 'donald');
+
+    my $it = $tree->iter;
+
+    while(my $node = $it->next) {
+        printf "key = %s, value = %s\n", $node->key, $node->val;
+    }
+
+=head2 size()
+
+Returns the number of nodes in the tree.
+
+=head2 min()
+
+Returns the node with the minimal key.
+
+=head2 max()
+
+Returns the node with the maximal key.
+
+=head2 lookup(KEY, [MODE])
+
+When called in scalar context, lookup(KEY) returns the value
+associated with KEY.
+
+When called in list context, lookup(KEY) returns a list whose first
+element is the value associated with KEY, and whose second element
+is the node containing the key/value.
+
+An optional MODE parameter can be passed to lookup() to influence
+which key is returned.
+
+The values of MODE are constants that are exported on demand by
+Tree::AA
+
+    use Tree::AA qw[LUEQUAL LUGTEQ LULTEQ LUGREAT LULESS LUNEXT LUPREV];
+
+=over
+
+=item LUEQUAL
+
+This is the default mode. Returns the node exactly matching the key, or C<undef> if not found. 
+
+=item LUGTEQ
+
+Returns the node exactly matching the specified key, 
+if this is not found then the next node that is greater than the specified key is returned.
+
+=item LULTEQ
+
+Returns the node exactly matching the specified key, 
+if this is not found then the next node that is less than the specified key is returned.
+
+=item LUGREAT
+
+Returns the node that is just greater than the specified key - not equal to. 
+This mode is similar to LUNEXT except that the specified key need not exist in the tree.
+
+=item LULESS
+
+Returns the node that is just less than the specified key - not equal to. 
+This mode is similar to LUPREV except that the specified key need not exist in the tree.
+
+=item LUNEXT
+
+Looks for the key specified, if not found returns C<undef>. 
+If the node is found returns the next node that is greater than 
+the one found (or C<undef> if there is no next node). 
+
+This can be used to step through the tree in order.
+
+=item LUPREV
+
+Looks for the key specified, if not found returns C<undef>. 
+If the node is found returns the previous node that is less than 
+the one found (or C<undef> if there is no previous node). 
+
+This can be used to step through the tree in reverse order.
+
+=back
+
+
 
 =head1 DEPENDENCIES
 
