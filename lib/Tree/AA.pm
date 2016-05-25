@@ -621,6 +621,17 @@ This is a Perl implementation of the Arne Andersson, or AA tree, a type of auto-
 
 See the Wikipedia article at L<https://en.wikipedia.org/wiki/AA_tree> for detailed information on AA Trees.
 
+
+=head1 DEPENDENCIES
+
+L<enum>
+
+
+=head1 INCOMPATIBILITIES
+
+None reported.
+
+
 =head1 BUGS AND LIMITATIONS
 
 Please report any bugs or feature requests via the GitHub web interface at 
