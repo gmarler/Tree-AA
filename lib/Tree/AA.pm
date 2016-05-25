@@ -552,3 +552,117 @@ sub aa_split {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+Tree::AA - Perl implementation of the AA tree, a type of auto-balancing binary search tree.
+
+=head1 SYNOPSIS
+
+  use Tree::AA;
+
+  # By default, this tree compares nodes lexically/asciibetically
+  my $tree = Tree::AA->new;
+  $tree->put('France'  => 'Paris');
+  $tree->put('England' => 'London');
+  $tree->put('Hungary' => 'Budapest');
+  $tree->put('Ireland' => 'Dublin');
+  $tree->put('Egypt'   => 'Cairo');
+  $tree->put('Germany' => 'Berlin');
+
+  $tree->put('Alaska' => 'Anchorage'); # D'oh! Alaska isn't a Country
+  $tree->delete('Alaska');
+
+  print scalar $tree->get('Ireland'); # 'Dublin'
+
+  print $tree->size; # 6
+  print $tree->min->key; # 'Egypt' 
+  print $tree->max->key; # 'Ireland' 
+
+  print $tree->nth(0)->key;  # 'Egypt' 
+  print $tree->nth(-1)->key; # 'Ireland' 
+
+  # print items, ordered by key
+  my $it = $tree->iter;
+
+  while(my $node = $it->next) {
+      printf "key = %s, value = %s\n", $node->key, $node->val;
+  }
+
+  # print items in reverse order
+  $it = $tree->rev_iter;
+
+  while(my $node = $it->next) {
+      printf "key = %s, value = %s\n", $node->key, $node->val;
+  }
+
+  # Hash interface
+  tie my %capital, 'Tree::RB';
+
+  # or do this to store items in descending order 
+  tie my %capital, 'Tree::RB', sub { $_[1] cmp $_[0] };
+
+  $capital{'France'}  = 'Paris';
+  $capital{'England'} = 'London';
+  $capital{'Hungary'} = 'Budapest';
+  $capital{'Ireland'} = 'Dublin';
+  $capital{'Egypt'}   = 'Cairo';
+  $capital{'Germany'} = 'Berlin';
+
+  # print items in order
+  while(my ($key, $val) = each %capital) {
+      printf "key = $key, value = $val\n";
+  }
+
+=head1 DESCRIPTION
+
+This is a Perl implementation of the Arne Andersson, or AA tree, a type of auto-balancing binary search tree which generally has better lookup performance than a Red/Black tree.
+
+See the Wikipedia article at L<https://en.wikipedia.org/wiki/AA_tree> for detailed information on AA Trees.
+
+=head1 BUGS AND LIMITATIONS
+
+Please report any bugs or feature requests via the GitHub web interface at 
+L<https://github.com/gmarler/Tree-AA/issues>.
+
+=head1 AUTHOR
+
+Gordon Marler  C<< <gmarler@cpan.org> >>
+
+Some (okay, most) of the code, tests and documentation have been borrowed from Arun Prasad's L<https://metacpan.org/pod/Tree::RB>.
+
+=head1 ACKNOWLEDGEMENTS
+
+Julienne Walker's AA Tree Tutorial (L<http://www.eternallyconfuzzled.com/tuts/datastructures/jsw_tut_andersson.aspx>).
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright (c) 2016, Gordon Marler C<< <gmarler@cpan.org> >>. All rights reserved.
+
+This module is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself. See L<perlartistic>.
+
+
+=head1 DISCLAIMER OF WARRANTY
+
+BECAUSE THIS SOFTWARE IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
+FOR THE SOFTWARE, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN
+OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
+PROVIDE THE SOFTWARE "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER
+EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE
+ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE SOFTWARE IS WITH
+YOU. SHOULD THE SOFTWARE PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL
+NECESSARY SERVICING, REPAIR, OR CORRECTION.
+
+IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
+WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
+REDISTRIBUTE THE SOFTWARE AS PERMITTED BY THE ABOVE LICENCE, BE
+LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL,
+OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE
+THE SOFTWARE (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING
+RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
+FAILURE OF THE SOFTWARE TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
+SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGES.
