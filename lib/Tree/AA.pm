@@ -515,6 +515,7 @@ sub delete {
 }
 
 *DELETE = \&delete;
+*remove = \&delete;
 
 sub aa_skew {
   my $self = shift;

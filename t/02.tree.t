@@ -15,6 +15,7 @@ foreach my $m (qw[
     put
     insert
     delete
+    remove
     lookup
     iter
     rev_iter
