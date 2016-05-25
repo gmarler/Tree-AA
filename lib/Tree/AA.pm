@@ -292,7 +292,7 @@ sub UNTIE {
   undef @$self;
 }
 
-sub root { $_[0]->[ROOT] }
+sub root { $_[0]->[ROOT] == $nil ? undef : $_[0]->[ROOT] }
 sub size { $_[0]->[SIZE] }
 
 *SCALAR = \&size;
@@ -502,7 +502,8 @@ sub put {
   return $root;
 }
 
-*STORE = \&put;
+*STORE    = \&put;
+*insert   = \&lookup;
 
 sub delete {
   my ($self, $key_or_node) = @_;

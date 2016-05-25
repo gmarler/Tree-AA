@@ -8,13 +8,20 @@ use_ok( 'Tree::AA' );
 
 diag( "Testing Tree::AA" );
 
-#   put
 #
 foreach my $m (qw[
     new
+    root
+    put
+    insert
+    delete
+    lookup
     iter
     rev_iter
     size
+    min
+    max
+    nth
   ])
 {
     can_ok('Tree::AA', $m);
@@ -23,6 +30,8 @@ foreach my $m (qw[
 my $tree = Tree::AA->new;
 isa_ok($tree, 'Tree::AA');
 ok($tree->size == 0, 'New tree has size zero');
+# Make sure root() method returns undef for a tree with no nodes
+is($tree->root(), undef, 'Empty tree as an undef root, as expected');
 
 $tree->put('France'  => 'Paris');
 $tree->put('England' => 'London');
@@ -36,11 +45,13 @@ ok($tree->size == 6, 'size check after inserts');
 is($tree->min->key, 'Egypt', 'min');
 is($tree->max->key, 'Ireland', 'max');
 
+#
 # Iterator tests
 my $it;
 $it = $tree->iter;
 isa_ok($it, 'Tree::AA::Iterator');
 can_ok($it, 'next');
+
 
 my @iter_tests = (
   sub {
@@ -122,7 +133,7 @@ $tree->put('Timbuktu' => '');
 is($tree->get('Timbuktu'), '', 'False values can be stored');
 
 # A Tree with a numeric comparison
-my $tree = Tree::AA->new(
+$tree = Tree::AA->new(
   sub {
     my ($i, $j) = @_;
     if ($i < $j)  { return -1 }
