@@ -101,4 +101,44 @@ sub predecessor {
   }
 }
 
+sub strip {
+  my $self     = shift;
+  my $callback = shift;
+
+  undef $self->[_LEFT];
+  undef $self->[_RIGHT];
+  #my @stack;
+  #my $trav = $self;
+  #while ($trav != nil()) {
+  #  push @stack, $trav;
+  #  $trav = $trav->[_LEFT];
+  #}
+
+  #while (my $node = pop @stack) {
+  #  my $result = $node;
+  #  if ($node->[_RIGHT] != nil()) {
+  #    $node = $node->[_RIGHT];
+  #    while ($node != nil()) {
+  #      push @stack, $node;
+  #      $node = $node->[_LEFT];
+  #    }
+  #  }
+  #  my $leaf = $result->leaf;
+  #  # detach $leaf from the (sub)tree
+  #  no warnings "uninitialized";
+  #  if ($leaf == $result->[_LEFT]) {
+  #    undef $result->[_LEFT];
+  #  } else {
+  #    undef $result->[_RIGHT];
+  #  }
+
+  #  if ($callback) {
+  #    $callback->($leaf);
+  #  }
+
+  #}
+}
+
+sub DESTROY { $_[0]->strip; }
+
 1;

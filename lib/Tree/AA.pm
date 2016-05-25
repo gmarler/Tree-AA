@@ -132,26 +132,79 @@ use enum qw{
   HASH_SEEK_ARG
 };
 
+# Extract sentinel 'NIL' node from Tree::AA::Node
+our $nil = Tree::AA::Node->nil();
+
 # Node and hash Iteration
 sub _mk_iter {
   my $start_fn = shift || 'min';
   my $next_fn  = shift || 'successor';
 
+
   return sub {
     my $self = shift;
     my $key  = shift;
     my $node;
+    my @stack;
+    my $node_tracker = $self->[ROOT];
+
+    # TODO: Should this test for an empty tree be earlier?
+    if ($node_tracker->level != 0) {
+      # build the appropriate traversal stack, based on whether we are
+      # iterating forwards or backwards
+      while ($node_tracker->level != 0) {
+        push(@stack,$node_tracker);
+        if ($next_fn eq 'successor') {
+          $node_tracker = $node_tracker->[_LEFT];
+        } else {
+          $node_tracker = $node_tracker->[_RIGHT];
+        }
+      }
+    }
+
+    my $successor = sub {
+      my $node = pop @stack;
+      for (my $node2 = $node->[_RIGHT];
+           $node2->level != 0;
+           $node2 = $node2->[_LEFT]) {
+           push @stack, $node2;
+      }
+      return $node;
+    };
+
+    my $predecessor = sub {
+      my $node = pop @stack;
+      for (my $node2 = $node->[_LEFT];
+           $node2->level != 0;
+           $node2 = $node2->[_RIGHT]) {
+           push @stack, $node2;
+      }
+      return $node;
+    };
+
+    # Now substitute the proper coderef
+    if ($next_fn eq 'successor') {
+      $next_fn = $successor;
+    } else {
+      $next_fn = $predecessor;
+    }
+
     my $iter = sub {
       if ($node) {
-        $node = $node->$next_fn;
+        # We're in the middle of an ongoing iteration
+        #$node = $node->$next_fn;
+        $node = $self->$next_fn;
       } else {
+        # We're just starting an iteration
         if (defined $key) {
-          # seek to $key
+          # seek to $key and return immediately - no real iteration
           (undef, $node) = $self->lookup(
             $key,
-            $next_fn eq 'successor' ? LUGTEQ : LULTEQ
+            # Note that we've changed from a name to a CODEREF by this point
+            $next_fn == $successor ? LUGTEQ : LULTEQ
           );
         } else {
+          # find the node to start the iteration with...
           $node = $self->$start_fn;
         }
       }
@@ -166,9 +219,6 @@ sub _mk_iter {
 *iter     = _mk_iter(qw/min successor/);
 *rev_iter = _mk_iter(qw/max predecessor/);
 
-
-# Extract sentinel 'NIL' node from Tree::AA::Node
-our $nil = Tree::AA::Node->nil();
 
 sub _reset_hash_iter {
   my $self = shift;
