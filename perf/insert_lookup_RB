@@ -1,0 +1,22 @@
+#!/usr/bin/env perl
+
+use Tree::RB;
+
+my $tree = Tree::RB->new(
+  sub {
+    my ($i,$j) = @_;
+    if ($i < $j) { return -1 }
+    if ($i > $j) { return  1 }
+    if ($i == $j) { return 0; }
+  }
+);
+
+foreach my $i (1..50000) {
+  $tree->put($i => [ $i ]);
+}
+
+foreach my $key (1..50000) {
+  my (@ret) = $tree->lookup($key);
+}
+
+exit 0;

@@ -1,8 +1,8 @@
 #!/usr/bin/env perl
 
-use Tree::RB;
+use Tree::AA;
 
-my $tree = Tree::RB->new(
+my $tree = Tree::AA->new(
   sub {
     my ($i,$j) = @_;
     if ($i < $j) { return -1 }
@@ -15,6 +15,8 @@ foreach my $i (1..50000) {
   $tree->put($i => [ $i ]);
 }
 
-my (@ret) = $tree->lookup(2345);
+foreach my $key (1..50000) {
+  my (@ret) = $tree->lookup($key);
+}
 
 exit 0;
