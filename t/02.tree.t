@@ -98,11 +98,28 @@ $it = $tree->iter('Iceland');
 $node = $it->next;
 is($node->key, 'Ireland', 'seek check, key does not exist but is lt max key');
 
-# $it = $tree->iter('Timbuktu');
-# $node = $it->next;
-# ok(!defined $node, 'seek check, non existant key gt all keys')
-#   or diag(Dumper($node));
+$it = $tree->iter('Timbuktu');
+$node = $it->next;
+ok(!defined $node, 'seek check, non existent key gt all keys')
+  or diag(Dumper($node));
 
+# seeking in reverse
+$it = $tree->rev_iter('Hungary');
+$node = $it->next;
+is($node->key, 'Hungary', 'reverse seek check, key exists');
+$node = $it->next;
+is($node->key, 'Germany', 'reverse seek check, next key lt this one');
+
+$it = $tree->rev_iter('Finland');
+$node = $it->next;
+is($node->key, 'England', 'reverse seek check, key does not exist but is gt min key');
+
+$it = $tree->rev_iter('Albania');
+$node = $it->next;
+ok(!defined $node, 'reverse seek check, non existant key lt all keys');
+
+$tree->put('Timbuktu' => '');
+is($tree->get('Timbuktu'), '', 'False values can be stored');
 
 
 done_testing();

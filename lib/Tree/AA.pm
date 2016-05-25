@@ -185,27 +185,26 @@ sub _mk_iter {
       return $node;
     };
 
-    # Now specify the proper coderef
-    if ($next_fn eq 'successor') {
-      $next_coderef = $successor;
-    } else {
-      $next_coderef = $predecessor;
-    }
-
-    my $iter = sub {
+   my $iter = sub {
       if ($node) {
         # We're in the middle of an ongoing iteration
         #$node = $node->$next_fn;
         $node = $self->$next_coderef();
       } else {
         # We're just starting an iteration
+
+        # Specify the proper coderef
+        if ($next_fn eq 'successor') {
+          $next_coderef = $successor;
+        } else {
+          $next_coderef = $predecessor;
+        }
+ 
         if (defined $key) {
-          # seek to $key and return immediately - no real iteration
+          # seek to $key and return that as the first item in the iteration
           (undef, $node) = $self->lookup(
             $key,
-            # Note that we've changed from a name to a CODEREF by this point
-            # TODO: Explicitly test this
-            $next_coderef == $successor ? LUGTEQ : LULTEQ
+            $next_fn eq 'successor' ? LUGTEQ : LULTEQ
           );
         } else {
           # find the node to start the iteration with...
@@ -391,7 +390,7 @@ sub lookup {
       return wantarray ? ($next->[_VAL], $next): $next->[_VAL];
     }
   }
-  return;
+  return;  # undef
 }
 
 *FETCH = \&lookup;
