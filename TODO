@@ -1,8 +1,9 @@
 - Add insert as alias of put
 - Test root() method to make sure it really returns undef on an
   empty tree, rather than the sentinel node
-- Test put() method's ability to ever return undef.
+- Add delete/remove method and tests
+- test insertion of node with a duplicate key, but different value
 - Test all modes of lookup method
 - Test nth(INDEX) method more thoroughly
-- test insertion of node with a duplicate key, but different value
+- Test put() method's ability to ever return undef.
 
