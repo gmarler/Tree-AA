@@ -88,4 +88,21 @@ foreach my $t (@rev_iter_tests) {
     $t->($it);
 }
 
+# seeking
+my $node;
+$it = $tree->iter('France');
+$node = $it->next;
+is($node->key, 'France', 'seek check, key exists');
+
+$it = $tree->iter('Iceland');
+$node = $it->next;
+is($node->key, 'Ireland', 'seek check, key does not exist but is lt max key');
+
+# $it = $tree->iter('Timbuktu');
+# $node = $it->next;
+# ok(!defined $node, 'seek check, non existant key gt all keys')
+#   or diag(Dumper($node));
+
+
+
 done_testing();

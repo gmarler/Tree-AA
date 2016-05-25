@@ -140,6 +140,7 @@ sub _mk_iter {
   my $start_fn = shift || 'min';
   my $next_fn  = shift || 'successor';
 
+  my $next_coderef;
 
   return sub {
     my $self = shift;
@@ -184,18 +185,18 @@ sub _mk_iter {
       return $node;
     };
 
-    # Now substitute the proper coderef
+    # Now specify the proper coderef
     if ($next_fn eq 'successor') {
-      $next_fn = $successor;
+      $next_coderef = $successor;
     } else {
-      $next_fn = $predecessor;
+      $next_coderef = $predecessor;
     }
 
     my $iter = sub {
       if ($node) {
         # We're in the middle of an ongoing iteration
         #$node = $node->$next_fn;
-        $node = $self->$next_fn;
+        $node = $self->$next_coderef();
       } else {
         # We're just starting an iteration
         if (defined $key) {
@@ -204,12 +205,12 @@ sub _mk_iter {
             $key,
             # Note that we've changed from a name to a CODEREF by this point
             # TODO: Explicitly test this
-            $next_fn == $successor ? LUGTEQ : LULTEQ
+            $next_coderef == $successor ? LUGTEQ : LULTEQ
           );
         } else {
           # find the node to start the iteration with...
           #$node = $self->$start_fn;
-          $node = $self->$next_fn;
+          $node = $self->$next_coderef();
         }
       }
       return $node;
@@ -350,7 +351,7 @@ sub lookup {
 
   my $next_child;
 
-  while ($x) {
+  while ($x != $nil) {
     $y = $x;
     if ($cmp ? $cmp->($key, $x->[_KEY]) == 0
              : $key eq $x->[_KEY]) {
