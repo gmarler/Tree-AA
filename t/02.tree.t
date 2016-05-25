@@ -121,5 +121,74 @@ ok(!defined $node, 'reverse seek check, non existant key lt all keys');
 $tree->put('Timbuktu' => '');
 is($tree->get('Timbuktu'), '', 'False values can be stored');
 
+# A Tree with a numeric comparison
+my $tree = Tree::AA->new(
+  sub {
+    my ($i, $j) = @_;
+    if ($i < $j)  { return -1 }
+    if ($i == $j) { return  0 }
+    if ($i > $j)  { return  1 }
+  }
+);
+
+$tree->put(0 => 0);
+$tree->put(1 => 1);
+$tree->put(2 => 2);
+$tree->put(3 => 3);
+$tree->put(4 => 4);
+$tree->put(5 => 5);
+
+ok($tree->size == 6, 'size check after inserts');
+
+$it = $tree->iter;
+isa_ok($it, 'Tree::AA::Iterator');
+can_ok($it, 'next');
+
+my @numeric_iter_tests = (
+  sub {
+    my $node = $_[0]->next;
+    ok($node->key == 0 && $node->val == 0, 'numeric iterator check');
+  },
+  sub {
+    my $node = $_[0]->next;
+    ok($node->key == 1 && $node->val == 1, 'numeric iterator check');
+  },
+  sub {
+    my $node = $_[0]->next;
+    ok($node->key == 2 && $node->val == 2, 'numeric iterator check');
+  },
+ sub {
+   my $node = $_[0]->next;
+   ok($node->key == 3 && $node->val == 3, 'numeric iterator check');
+ },
+ sub {
+   my $node = $_[0]->next;
+   ok($node->key == 4 && $node->val == 4, 'numeric iterator check');
+ },
+ sub {
+   my $node = $_[0]->next;
+   ok($node->key == 5 && $node->val == 5, 'numeric iterator check');
+ },
+ sub {
+   my $node = $_[0]->next;
+   ok(!defined $node, 'numeric iterator check - no more items');
+ },
+);
+
+foreach my $t (@numeric_iter_tests) {
+  $t->($it);
+}
+
+# Reverse numeric iterator tests
+$it = $tree->rev_iter;
+isa_ok($it, 'Tree::AA::Iterator');
+can_ok($it, 'next');
+
+my @rev_numeric_iter_tests = (reverse(@numeric_iter_tests[0 .. $#numeric_iter_tests-1]), $numeric_iter_tests[-1]);
+
+foreach my $t (@rev_numeric_iter_tests) {
+  $t->($it);
+}
+
 
 done_testing();

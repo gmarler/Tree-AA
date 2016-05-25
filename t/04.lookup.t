@@ -66,4 +66,25 @@ is $tree->nth(-5)->key => 'England', 'nth: -5';
 is $tree->nth(-2)->key => 'Hungary', 'nth: -2';
 is $tree->nth(-1)->key => 'Ireland', 'nth: -1';
 
+# A Tree with a numeric comparison
+my $tree = Tree::AA->new(
+  sub {
+    my ($i, $j) = @_;
+    if ($i < $j)  { return -1 } 
+    if ($i == $j) { return  0 } 
+    if ($i > $j)  { return  1 } 
+  }
+);
+
+$tree->put(0 => 0);
+$tree->put(1 => 1);
+$tree->put(2 => 2);
+$tree->put(3 => 3);
+$tree->put(4 => 4);
+$tree->put(5 => 5);
+
+$val = $tree->lookup(1);
+is($val, 1, 'numeric lookup');
+
+
 done_testing();
