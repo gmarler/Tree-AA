@@ -163,7 +163,8 @@ sub _mk_iter {
     }
 
     my $successor = sub {
-      my $node = pop @stack;
+      my $node = scalar(@stack) ? pop @stack : undef;
+      return $node if (!defined($node));
       for (my $node2 = $node->[_RIGHT];
            $node2->level != 0;
            $node2 = $node2->[_LEFT]) {
@@ -173,7 +174,8 @@ sub _mk_iter {
     };
 
     my $predecessor = sub {
-      my $node = pop @stack;
+      my $node = scalar(@stack) ? pop @stack : undef;
+      return $node if (!defined($node));
       for (my $node2 = $node->[_LEFT];
            $node2->level != 0;
            $node2 = $node2->[_RIGHT]) {
@@ -201,11 +203,13 @@ sub _mk_iter {
           (undef, $node) = $self->lookup(
             $key,
             # Note that we've changed from a name to a CODEREF by this point
+            # TODO: Explicitly test this
             $next_fn == $successor ? LUGTEQ : LULTEQ
           );
         } else {
           # find the node to start the iteration with...
-          $node = $self->$start_fn;
+          #$node = $self->$start_fn;
+          $node = $self->$next_fn;
         }
       }
       return $node;
