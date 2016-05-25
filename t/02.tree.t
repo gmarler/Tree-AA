@@ -77,4 +77,15 @@ foreach my $t (@iter_tests) {
   $t->($it);
 }
 
+# Reverse iterator tests
+$it = $tree->rev_iter;
+isa_ok($it, 'Tree::AA::Iterator');
+can_ok($it, 'next');
+
+my @rev_iter_tests = (reverse(@iter_tests[0 .. $#iter_tests-1]), $iter_tests[-1]);
+
+foreach my $t (@rev_iter_tests) {
+    $t->($it);
+}
+
 done_testing();
