@@ -292,21 +292,6 @@ sub UNTIE {
   undef @$self;
 }
 
-sub make_node {
-  my $self  = shift;
-  my $key   = shift;
-  my $value = shift;
-  my $level = shift;
-
-  my $rn = Tree::AA::Node->new($key, $value);
-  $rn->level($level);
-  $rn->left($nil);
-  $rn->right($nil);
-
-  return $rn;
-}
-
-
 sub root { $_[0]->[ROOT] }
 sub size { $_[0]->[SIZE] }
 
@@ -456,7 +441,7 @@ sub put {
   my $root = $self->[ROOT];
 
   if ($root == $nil) {
-    $root = $self->make_node($key, $value, 1);
+    $root = Tree::AA::Node->new($key, $value, 1);
   } else {
     my $it = $root;
     my @up = ();
@@ -491,7 +476,7 @@ sub put {
       $it = $it->[$dir];
     }
 
-    $it->[$dir] = $self->make_node($key, $value, 1);
+    $it->[$dir] = Tree::AA::Node->new($key, $value, 1);
 
     while (--$top >= 0) {
       if ($top != 0) {

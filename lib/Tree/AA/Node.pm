@@ -16,6 +16,21 @@ my %attribute = (
   right  => _RIGHT,
 );
 
+# Create sentinel nil node with accessor
+{
+  my $obj = [];
+  $obj->[_RIGHT] = $obj;
+  $obj->[_LEFT]  = $obj;
+  $obj->[_LEVEL] = 0;
+  bless $obj, __PACKAGE__;
+
+  # Our accessor
+  sub nil {
+    shift;   # Intentionally ignore invocant
+    return $obj;
+  }
+}
+
 sub _accessor {
   my $index = shift;
 
@@ -39,25 +54,13 @@ sub new {
   my $obj   = [];
 
   if (@_) {
-    $obj->[_KEY] = shift;
-    $obj->[_VAL] = shift;
+    $obj->[_KEY]   = shift;
+    $obj->[_VAL]   = shift;
+    $obj->[_LEVEL] = shift;
+    $obj->[_LEFT]  = nil();
+    $obj->[_RIGHT] = nil();
   }
   return bless $obj, $class;
-}
-
-# Create sentinel nil node with accessor
-{
-  my $obj = [];
-  $obj->[_RIGHT] = $obj;
-  $obj->[_LEFT]  = $obj;
-  $obj->[_LEVEL] = 0;
-  bless $obj, __PACKAGE__;
-
-  # Our accessor
-  sub nil {
-    shift;   # Intentionally ignore invocant
-    return $obj;
-  }
 }
 
 sub min {
