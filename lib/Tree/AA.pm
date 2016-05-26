@@ -199,7 +199,7 @@ sub _mk_iter {
         } else {
           $next_coderef = $predecessor;
         }
- 
+
         if (defined $key) {
           # seek to $key and return that as the first item in the iteration
           (undef, $node) = $self->lookup(
@@ -511,7 +511,29 @@ sub delete {
   defined $key_or_node
     or croak("Can't delete without a key or node to do it with");
 
+  # We don't use the ->root() method here, because we want to check for the
+  # sentinel node, not undef, since the ->root() method is a public interface
+  # with different external semantics
+  my $root = $self->[ROOT];
+  if ($self->[ROOT] != $nil) {
+    my $it = $self->[ROOT];
+    my @up;
+    my ($top, $dir) = (0, undef);
 
+    while (1) {
+      $up[$top++] = $it;
+
+      if ($it == $nil) {
+        $self->[ROOT] = $root;
+        return $root;
+      }
+    }
+
+  }
+  # Note that this algorithm assumes you're updating the root, so we can to do
+  # that in addition to just returning it
+  $self->[ROOT] = $root;
+  return $root;
 }
 
 *DELETE = \&delete;
@@ -579,11 +601,11 @@ Tree::AA - Perl implementation of the AA tree, a type of auto-balancing binary s
   print scalar $tree->get('Ireland'); # 'Dublin'
 
   print $tree->size; # 6
-  print $tree->min->key; # 'Egypt' 
-  print $tree->max->key; # 'Ireland' 
+  print $tree->min->key; # 'Egypt'
+  print $tree->max->key; # 'Ireland'
 
-  print $tree->nth(0)->key;  # 'Egypt' 
-  print $tree->nth(-1)->key; # 'Ireland' 
+  print $tree->nth(0)->key;  # 'Egypt'
+  print $tree->nth(-1)->key; # 'Ireland'
 
   # print items, ordered by key
   my $it = $tree->iter;
@@ -602,7 +624,7 @@ Tree::AA - Perl implementation of the AA tree, a type of auto-balancing binary s
   # Hash interface
   tie my %capital, 'Tree::RB';
 
-  # or do this to store items in descending order 
+  # or do this to store items in descending order
   tie my %capital, 'Tree::RB', sub { $_[1] cmp $_[0] };
 
   $capital{'France'}  = 'Paris';
@@ -681,41 +703,41 @@ Tree::AA
 
 =item LUEQUAL
 
-This is the default mode. Returns the node exactly matching the key, or C<undef> if not found. 
+This is the default mode. Returns the node exactly matching the key, or C<undef> if not found.
 
 =item LUGTEQ
 
-Returns the node exactly matching the specified key, 
+Returns the node exactly matching the specified key,
 if this is not found then the next node that is greater than the specified key is returned.
 
 =item LULTEQ
 
-Returns the node exactly matching the specified key, 
+Returns the node exactly matching the specified key,
 if this is not found then the next node that is less than the specified key is returned.
 
 =item LUGREAT
 
-Returns the node that is just greater than the specified key - not equal to. 
+Returns the node that is just greater than the specified key - not equal to.
 This mode is similar to LUNEXT except that the specified key need not exist in the tree.
 
 =item LULESS
 
-Returns the node that is just less than the specified key - not equal to. 
+Returns the node that is just less than the specified key - not equal to.
 This mode is similar to LUPREV except that the specified key need not exist in the tree.
 
 =item LUNEXT
 
-Looks for the key specified, if not found returns C<undef>. 
-If the node is found returns the next node that is greater than 
-the one found (or C<undef> if there is no next node). 
+Looks for the key specified, if not found returns C<undef>.
+If the node is found returns the next node that is greater than
+the one found (or C<undef> if there is no next node).
 
 This can be used to step through the tree in order.
 
 =item LUPREV
 
-Looks for the key specified, if not found returns C<undef>. 
-If the node is found returns the previous node that is less than 
-the one found (or C<undef> if there is no previous node). 
+Looks for the key specified, if not found returns C<undef>.
+If the node is found returns the previous node that is less than
+the one found (or C<undef> if there is no previous node).
 
 This can be used to step through the tree in reverse order.
 
@@ -758,11 +780,11 @@ the node with key less than or equal to the specified key.
 
 =head2 put(KEY, VALUE)
 
-Adds a new node to the tree. 
+Adds a new node to the tree.
 
-The first argument is the key of the node, the second is its value. 
+The first argument is the key of the node, the second is its value.
 
-If a node with that key already exists, its value is replaced with 
+If a node with that key already exists, its value is replaced with
 the given value and the old value is returned. Otherwise, undef is returned.
 
 
@@ -779,7 +801,7 @@ None reported.
 
 =head1 BUGS AND LIMITATIONS
 
-Please report any bugs or feature requests via the GitHub web interface at 
+Please report any bugs or feature requests via the GitHub web interface at
 L<https://github.com/gmarler/Tree-AA/issues>.
 
 =head1 AUTHOR
