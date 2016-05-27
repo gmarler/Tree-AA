@@ -527,8 +527,55 @@ sub delete {
         $self->[ROOT] = $root;
         return $root;
       }
+
+      if ($cmp) {
+        if ($cmp->($it->[_KEY], $key) < 0) {
+          $dir = _RIGHT;
+        } elsif ($cmp->($it->[_KEY], $key) > 0) {
+          $dir = _LEFT;
+        } else {
+          last;
+        }
+      } else {
+        if ($it->[_KEY] lt $key) {
+          $dir = _RIGHT;
+        } elsif ($it->[_KEY] gt $key) {
+          $dir = _LEFT;
+        } else {
+          last;
+        }
+      }
+      $it = $it->[$dir];
     }
 
+    if (($it->[_LEFT] == $nil) || ($it->[_RIGHT] == $nil)) {
+      my $dir2 = $it->[_LEFT] == $nil
+                 ? _RIGHT
+                 : _LEFT ;
+      if (--$top != 0) {
+        $up[$top - 1]->[$dir] = $it->[$dir2];
+      } else {
+        $root = $it->[_RIGHT];
+        # Probably don't need this, since we're doing it at the bottom
+        # $self->[ROOT] = $root;
+      }
+    } else {
+      my $heir = $it->[_RIGHT];
+      my $prev = $it;
+    }
+
+    while ($heir->[_LEFT] != $nil) {
+      $up[$top++] = $prev = $heir;
+      $heir = $heir->[_LEFT];
+    }
+
+    $it->[_KEY]   = $heir->[_KEY];
+    $it->[_VALUE] = $heir->[_VALUE];
+
+    my $dir3 = $prev == $it
+               ? _RIGHT
+               : _LEFT ;
+    $prev->[$dir3] = $heir->[_RIGHT];
   }
   # Note that this algorithm assumes you're updating the root, so we can to do
   # that in addition to just returning it
@@ -573,6 +620,18 @@ sub aa_split {
     $self->[ROOT] = $root;
   }
   return $root;
+}
+
+# Call as $self->print($self->root);
+sub _print {
+  my $self = shift;
+  my $node = shift;
+
+  if ($node != $nil) {
+    $self->print( $node->left );
+    say $node->key;
+    $self->print( $node->right );
+  }
 }
 
 1;
