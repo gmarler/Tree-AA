@@ -510,11 +510,18 @@ sub delete {
 
   defined $key_or_node
     or croak("Can't delete without a key or node to do it with");
+  my ($key, $value);
+
+  $key = (ref $key_or_node eq 'Tree::AA::Node')
+          ? $key_or_node->[_KEY]
+          : $key_or_node;
 
   # We don't use the ->root() method here, because we want to check for the
   # sentinel node, not undef, since the ->root() method is a public interface
   # with different external semantics
   my $root = $self->[ROOT];
+  my $cmp = $self->[CMP];
+
   if ($self->[ROOT] != $nil) {
     my $it = $self->[ROOT];
     my @up;
@@ -562,23 +569,57 @@ sub delete {
     } else {
       my $heir = $it->[_RIGHT];
       my $prev = $it;
+
+      while ($heir->[_LEFT] != $nil) {
+        $up[$top++] = $prev = $heir;
+        $heir = $heir->[_LEFT];
+      }
+
+      $it->[_KEY]   = $heir->[_KEY];
+      $it->[_VAL]   = $heir->[_VAL];
+
+      my $dir3 = $prev == $it
+                 ? _RIGHT
+                 : _LEFT ;
+      $prev->[$dir3] = $heir->[_RIGHT];
     }
 
-    while ($heir->[_LEFT] != $nil) {
-      $up[$top++] = $prev = $heir;
-      $heir = $heir->[_LEFT];
+    while (--$top >= 0) {
+      if ($top != 0) {
+        $dir =
+        $up[$top - 1]->[_RIGHT] == $up[$top] ?
+        _RIGHT                               :
+        _LEFT;
+      }
+
+      if (($up[$top]->[_LEFT]->[_LEVEL]  < ($up[$top]->[_LEVEL] - 1))  ||
+        ($up[$top]->[_RIGHT]->[_LEVEL] < ($up[$top]->[_LEVEL] - 1))
+      ) {
+
+        if ($up[$top]->[_RIGHT]->[_LEVEL] > --$up[$top]->[_LEVEL]) {
+          $up[$top]->[_RIGHT]->[_LEVEL] = $up[$top]->[_LEVEL];
+        }
+
+        $up[$top] = $self->aa_skew($up[$top]);
+        $up[$top]->[_RIGHT] = $self->aa_skew($up[$top]->[_RIGHT]);
+        $up[$top]->[_RIGHT]->[_RIGHT] =
+        $self->aa_skew($up[$top]->[_RIGHT]->[_RIGHT]);
+
+        $up[$top] = $self->aa_split($up[$top]);
+        $up[$top]->[_RIGHT] = $self->aa_split($up[$top]->[_RIGHT]);
+      }
+
+      if ($top != 0) {
+        $up[$top]->[$dir] = $up[$top];
+      } else {
+        $root = $up[$top];
+      }
     }
-
-    $it->[_KEY]   = $heir->[_KEY];
-    $it->[_VALUE] = $heir->[_VALUE];
-
-    my $dir3 = $prev == $it
-               ? _RIGHT
-               : _LEFT ;
-    $prev->[$dir3] = $heir->[_RIGHT];
   }
+
   # Note that this algorithm assumes you're updating the root, so we can to do
   # that in addition to just returning it
+  $self->[SIZE]--;
   $self->[ROOT] = $root;
   return $root;
 }
