@@ -587,9 +587,9 @@ sub delete {
     while (--$top >= 0) {
       if ($top != 0) {
         $dir =
-        $up[$top - 1]->[_RIGHT] == $up[$top] ?
-        _RIGHT                               :
-        _LEFT;
+          $up[$top - 1]->[_RIGHT] == $up[$top] ?
+          _RIGHT                               :
+          _LEFT;
       }
 
       if (($up[$top]->[_LEFT]->[_LEVEL]  < ($up[$top]->[_LEVEL] - 1))  ||
