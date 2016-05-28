@@ -47,8 +47,8 @@ is($tree->delete('England')->key, 'England', 'delete intermediate node');
 $tree->put('England' => 'London');
 
 $tree->delete('Egypt');
-#is($tree->min->key,  'England', q[new min after deleting current min]);
-#is($tree->max->key,  'Ireland', q[max not changed after deleting current min]);
+is($tree->min->key,  'England', q[new min after deleting current min]);
+is($tree->max->key,  'Ireland', q[max not changed after deleting current min]);
 
 #              |
 #         <B:France>
@@ -63,8 +63,8 @@ $tree->delete('Egypt');
 #                   <*> <*>
 
 $tree->delete('Ireland');
-#is($tree->max->key,  'Hungary', q[new max after deleting current max]);
-#is($tree->min->key,  'England', q[min not changed after deleting current max]);
+is($tree->max->key,  'Hungary', q[new max after deleting current max]);
+is($tree->min->key,  'England', q[min not changed after deleting current max]);
 
 #            |
 #       <B:France>
