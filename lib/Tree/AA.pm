@@ -512,6 +512,9 @@ sub delete {
     or croak("Can't delete without a key or node to do it with");
   my ($key, $value);
 
+  my $return_node = ($self->lookup($key_or_node))[1];
+  return unless $return_node;
+
   $key = (ref $key_or_node eq 'Tree::AA::Node')
           ? $key_or_node->[_KEY]
           : $key_or_node;
@@ -532,7 +535,7 @@ sub delete {
 
       if ($it == $nil) {
         $self->[ROOT] = $root;
-        return $root;
+        # return $root;
       }
 
       if ($cmp) {
@@ -621,7 +624,7 @@ sub delete {
   # that in addition to just returning it
   $self->[SIZE]--;
   $self->[ROOT] = $root;
-  return $root;
+  return $return_node;
 }
 
 *DELETE = \&delete;
