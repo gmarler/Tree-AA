@@ -202,5 +202,33 @@ foreach my $t (@rev_numeric_iter_tests) {
   $t->($it);
 }
 
+# Larger numeric test
+$tree = Tree::AA->new(
+  sub {
+    my ($i, $j) = @_;
+    if ($i < $j)  { return -1 }
+    if ($i == $j) { return  0 }
+    if ($i > $j)  { return  1 }
+  }
+);
 
+my (@nums,@extracted_nums);
+for (my $i = 0; $i <= 5000; $i++) {
+  $tree->insert($i => $i);
+  push @nums, $i;
+}
+
+cmp_ok(scalar(@nums), '==', 5001, 'have 5001 items to use as keys');
+cmp_ok($tree->size, '==', 5001, 'numeric tree has 5001 nodes');
+
+$it = $tree->iter;
+
+while (my $node = $it->next) {
+  push @extracted_nums, $node->key;
+}
+cmp_ok(scalar(@extracted_nums), '==', 5001, 'confirm we have 5001 keys');
+
+cmp_deeply(\@extracted_nums,
+           \@nums,
+           'proper numeric keys, ordered correctly in tree');
 done_testing();

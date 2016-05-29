@@ -503,7 +503,7 @@ sub put {
 }
 
 *STORE    = \&put;
-*insert   = \&lookup;
+*insert   = \&put;
 
 sub delete {
   my ($self, $key_or_node) = @_;
